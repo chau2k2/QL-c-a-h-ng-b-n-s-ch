@@ -1,0 +1,57 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using CrystalDecisions.CrystalReports.Engine;
+using CrystalDecisions.Shared;
+using System.Data.SqlClient;
+using System.Configuration;
+
+namespace QL_cửa_hàng_bán_sách
+{
+    public partial class InHoaDon : Form
+    {
+        public InHoaDon()
+        {
+            InitializeComponent();
+        }
+
+
+        private void btninHD_Click(object sender, EventArgs e)
+        {
+            string contr = ConfigurationManager.ConnectionStrings["QLBanSach"].ConnectionString;
+
+            using (SqlConnection con = new SqlConnection(contr))
+            {
+
+                using (SqlCommand cmd = new SqlCommand())
+                {
+                    cmd.Connection = con;
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.CommandText = "pr_inHD";
+                    cmd.Parameters.AddWithValue("@mahd", txtInHDma.Text);
+
+
+                    using (SqlDataAdapter adapter = new SqlDataAdapter(cmd))
+                    {
+
+                        adapter.SelectCommand = cmd;
+                        DataTable tb = new System.Data.DataTable();
+                        adapter.Fill(tb);
+                        CrystalReport1 rpt = new CrystalReport1();
+                        rpt.SetDataSource(tb);
+                        crystalReportViewerhd.ReportSource = rpt;
+                        crystalReportViewerhd.Refresh();
+
+                    }
+
+                }
+            }
+        }
+    }
+}
